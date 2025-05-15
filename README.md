@@ -32,11 +32,13 @@ machine learning interatomic potentials aiida plugin
 The code relies heavily on [janus-core](https://github.com/stfc/janus-core), which handles mlip calculations using ASE.
 
 
+# Getting Started
+
 ## Installation
+Create a Python [virtual environment](https://docs.python.org/3/library/venv.html#creating-virtual-environments) and activate it to install aiida-mlip
 
 ```shell
 pip install aiida-mlip
-verdi quicksetup  # better to set up a new profile
 verdi plugin list aiida.calculations
 ```
 The last command should show a list of AiiDA pre-installed calculations and the aiida-mlip plugin calculations (mlip.opt, mlip.sp)
@@ -52,11 +54,27 @@ Registered entry points for aiida.calculations:
 * mlip.descriptors
 ```
 
+Aiida-mlip should be ready to run some notebooks at this stage. However, to have full functionality we reccomend configuring aiida-mlip by creating a profile and setting up a broker.
+
+## AiiDA Configuration
+
+Now that aiida-mlip plugin has been installed, we can setup the environment to run calculations:
+
+1. Install RabbitMQ ([ Link ](https://aiida.readthedocs.io/projects/aiida-core/en/stable/installation/guide_complete.html#rabbitmq))
+2. Run:
+```shell
+verdi presto #Sets up profile
+```
+`verdi presto` is a quick and simple way to setup the daemon to run some calculations, setting up a profile 'presto'; which configures the computer, broker (i.e. RabbitMQ) and database. [Aiida docs](https://aiida.readthedocs.io/projects/aiida-core/en/stable/installation/guide_complete.html#) go over a more detailed proccess to setup a profile.
+
 ## Usage
 
 The example folder provides scripts to submit calculations in the calculations folder, and tutorials in jupyter notebook format in the tutorials folder.
 
 A quick demo of how to submit a calculation using the provided example files:
+
+You need to create a [code](https://aiida.readthedocs.io/projects/aiida-core/en/stable/howto/run_codes.html#how-to-create-a-code) for Janus to be recognised as a code by aiida
+
 ```shell
 verdi daemon start     # make sure the daemon is running
 cd examples/calculations
@@ -77,13 +95,15 @@ a model will be trained using the provided example config file and xyz files (ca
 
 We recommend installing uv for dependency management when developing for `aiida-mlip`:
 
+
 1. Install [uv](https://docs.astral.sh/uv/getting-started/installation)
-2. Install `aiida-mlip` with dependencies in a virtual environment:
+2. Setup [PostgreSQL](https://aiida.readthedocs.io/projects/aiida-core/en/stable/installation/guide_complete.html#core-psql-dos)
+3. Install `aiida-mlip` with dependencies in a virtual environment:
 
 ```shell
 git clone https://github.com/stfc/aiida-mlip
 cd aiida-mlip
-uv sync  # Create a virtual environment and install dependencies
+uv sync --extra mace # Create a virtual environment and install dependencies with mace for tests
 source .venv/bin/activate
 pre-commit install  # Install pre-commit hooks
 pytest -v  # Discover and run all tests
